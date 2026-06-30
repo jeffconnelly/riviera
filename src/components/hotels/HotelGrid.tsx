@@ -56,7 +56,7 @@ export function HotelGrid({ hotels, onReset }: HotelGridProps) {
         animate="show"
       >
         {hotels.map((hotel) => (
-          <motion.div key={hotel.id} variants={item}>
+          <motion.div key={hotel.id} variants={item} className="w-full min-w-0">
             <HotelCard hotel={hotel} />
           </motion.div>
         ))}

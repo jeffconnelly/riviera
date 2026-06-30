@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Star, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,14 @@ interface HotelFiltersProps {
 export function HotelFilters({ cities }: HotelFiltersProps) {
   const { city, stars, maxPrice, setFilters, resetFilters, hasActiveFilters } =
     useFilters();
+
+  // Local slider value for instant visual feedback — URL only updates on release
+  const [sliderValue, setSliderValue] = useState(maxPrice);
+
+  function handleReset() {
+    setSliderValue(MAX_PRICE);
+    resetFilters();
+  }
 
   function toggleStar(star: number) {
     const next = stars.includes(star)
@@ -97,12 +106,13 @@ export function HotelFilters({ cities }: HotelFiltersProps) {
                 min={75}
                 max={MAX_PRICE}
                 step={25}
-                value={maxPrice}
-                onChange={(e) => setFilters({ maxPrice: Number(e.target.value) })}
+                value={sliderValue}
+                onChange={(e) => setSliderValue(Number(e.target.value))}
+                onPointerUp={(e) => setFilters({ maxPrice: Number((e.target as HTMLInputElement).value) })}
                 className="h-1.5 w-28 cursor-pointer accent-teal-600"
               />
               <span className="w-16 text-sm font-semibold text-slate-700">
-                {maxPrice === MAX_PRICE ? "Any" : `$${maxPrice}`}
+                {sliderValue === MAX_PRICE ? "Any" : `$${sliderValue}`}
               </span>
             </div>
           </div>
@@ -116,8 +126,8 @@ export function HotelFilters({ cities }: HotelFiltersProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={resetFilters}
-                  className="h-8 gap-1.5 text-xs text-slate-400 hover:text-slate-700"
+                  onClick={handleReset}
+                  className="h-8 cursor-pointer gap-1.5 text-xs text-slate-400 hover:text-slate-700"
                 >
                   <X className="size-3" />
                   Clear all
