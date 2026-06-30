@@ -3,6 +3,19 @@ import type { Hotel, HotelFilters, Room } from "./types";
 
 export const MAX_PRICE = 600;
 
+export const CITY_GRADIENTS: Record<string, string> = {
+  Chicago:    "from-slate-700 to-teal-600",
+  Austin:     "from-amber-700 to-teal-700",
+  Miami:      "from-cyan-500 to-blue-600",
+  "New York": "from-slate-900 to-slate-700",
+  Seattle:    "from-teal-700 to-emerald-900",
+  London:     "from-zinc-600 to-teal-800",
+  Paris:      "from-rose-600 to-teal-700",
+  Tokyo:      "from-violet-800 to-teal-700",
+  Sydney:     "from-sky-500 to-teal-500",
+  Rome:       "from-orange-700 to-teal-800",
+};
+
 export function filterHotels(hotels: Hotel[], filters: HotelFilters): Hotel[] {
   return hotels.filter((hotel) => {
     if (filters.city && hotel.address.city !== filters.city) return false;

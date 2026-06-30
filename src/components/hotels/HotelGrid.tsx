@@ -25,7 +25,7 @@ interface HotelGridProps {
   onReset?: () => void;
 }
 
-export function HotelGrid({ hotels, total, onReset }: HotelGridProps) {
+export function HotelGrid({ hotels, onReset }: HotelGridProps) {
   if (hotels.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -49,11 +49,6 @@ export function HotelGrid({ hotels, total, onReset }: HotelGridProps) {
 
   return (
     <div>
-      <p className="mb-6 text-sm text-slate-500">
-        Showing{" "}
-        <span className="font-medium text-slate-900">{hotels.length}</span> of{" "}
-        {total} properties
-      </p>
       <motion.div
         className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         variants={container}

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -14,23 +15,11 @@ import { Navbar } from "@/components/layout/Navbar";
 import { HotelAmenities } from "@/components/hotels/HotelAmenities";
 import { RoomAvailabilityChecker } from "@/components/hotels/RoomAvailabilityChecker";
 import hotelsData from "@/data/hotels.json";
+import { CITY_GRADIENTS } from "@/lib/hotel-utils";
 import type { Hotel } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const hotels = hotelsData as Hotel[];
-
-const CITY_GRADIENTS: Record<string, string> = {
-  Chicago: "from-teal-700 to-emerald-600",
-  Austin: "from-teal-800 to-teal-600",
-  Miami: "from-emerald-500 to-teal-600",
-  "New York": "from-slate-700 to-teal-700",
-  Seattle: "from-teal-600 to-cyan-600",
-  London: "from-emerald-700 to-teal-800",
-  Paris: "from-teal-600 to-emerald-700",
-  Tokyo: "from-cyan-700 to-teal-600",
-  Sydney: "from-emerald-500 to-cyan-600",
-  Rome: "from-teal-800 to-emerald-500",
-};
 
 export async function generateStaticParams() {
   return hotels.map((h) => ({ id: h.id }));
@@ -51,8 +40,9 @@ export default async function HotelPage({
   return (
     <>
       <Navbar />
-      <div className={cn("h-64 bg-gradient-to-br", gradient)}>
-        <div className="mx-auto flex h-full max-w-7xl flex-col justify-between px-4 py-6 sm:px-6">
+      <div className={cn("relative h-64 bg-linear-to-br", gradient)}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_60%)]" />
+        <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-between px-4 py-6 sm:px-6">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
@@ -119,7 +109,9 @@ export default async function HotelPage({
               <h2 className="mb-6 text-lg font-semibold text-slate-900">
                 Check Availability
               </h2>
-              <RoomAvailabilityChecker hotel={hotel} />
+              <Suspense>
+                <RoomAvailabilityChecker hotel={hotel} />
+              </Suspense>
             </section>
           </div>
 

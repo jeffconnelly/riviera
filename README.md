@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Riviera — Hotel Discovery Interface
 
-## Getting Started
+A premium hotel discovery frontend built as a take-home engineering assignment. Users browse 40 hotels across 10 global cities, filter by city, star rating, and price, dive into hotel detail pages, and check room availability by date range.
 
-First, run the development server:
+## Setup
+
+**Requirements:** Node.js 18+
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev       # http://localhost:3000
+npm run build     # production build + type check
+npm test          # vitest unit tests
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js 16** — App Router, TypeScript, `src/` directory
+- **Tailwind CSS v4** — utility-first styling
+- **shadcn/ui** (new-york style, `@base-ui/react`) — UI primitives
+- **framer-motion** — stagger animations on the hotel grid, hover lift on cards
+- **date-fns** — date range generation for availability logic
+- **react-day-picker** — calendar range picker (bundled with shadcn Calendar)
+- **Vitest** — unit tests for pure utility functions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## State Management
 
-## Learn More
+All filter state (city, star rating, max price) lives in **URL search parameters** via Next.js `useSearchParams` and `useRouter`. No external state library is used.
 
-To learn more about Next.js, take a look at the following resources:
+This approach was chosen deliberately:
+- Filter state is **shareable** — copy the URL, share the filtered view
+- **Browser back/forward** works correctly out of the box
+- **No hydration mismatch** — server and client render from the same source of truth
+- Zero boilerplate compared to Redux or Zustand for a use case this size
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Date range state (check-in / check-out) on the hotel detail page is also persisted in the URL (`?checkIn=yyyy-MM-dd&checkOut=yyyy-MM-dd`), so dates survive page refresh and can be bookmarked or shared.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Component Breakdown
 
-## Deploy on Vercel
+```
+src/
+  app/
+    page.tsx                        Server component — loads hotel data, renders shell
+    HotelDashboard.tsx              Client component — reads URL filters, renders grid + heading
+    hotels/[id]/page.tsx            Server component — hotel detail page (SSG via generateStaticParams)
+  components/
+    layout/
+      Navbar.tsx                    Sticky top nav with teal accent bar
+    hotels/
+      HotelCard.tsx                 Card with city-gradient header, star rating, price
+      HotelGrid.tsx                 Framer-motion staggered grid + empty state
+      HotelFilters.tsx              Sticky filter bar — city select, star toggles, price slider
+      HotelAmenities.tsx            Amenity pills with lucide icons
+      RoomAvailabilityChecker.tsx   Date range picker + available room list, URL-synced
+      RoomCard.tsx                  Individual room display with pricing and amenities
+  lib/
+    types.ts                        Hotel, Room, Address, HotelFilters TypeScript interfaces
+    hotel-utils.ts                  filterHotels, getAvailableRooms, getDateRange, getMinPrice, getCities
+    utils.ts                        cn() from shadcn
+  hooks/
+    useFilters.ts                   URL searchParam filter state hook
+  data/
+    hotels.json                     40-hotel mock dataset
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Running Tests
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm test
+```
+
+17 unit tests covering all pure functions in `src/lib/hotel-utils.ts`:
+- `filterHotels` — city, star, price filtering combinations
+- `getDateRange` — check-out exclusive range, single night, edge cases
+- `getAvailableRooms` — full availability, partial availability, empty dates, zero-night range
+- `getMinPrice` — cheapest room selection
+- `getCities` — unique sorted city list
+
+## AI Tooling
+
+This project was built with **Claude** (claude-sonnet-4-6 via Claude Code) as an active development partner throughout the session. Specifically:
+
+- **Architecture decisions** — the overall file structure, state management approach, and component boundaries were planned collaboratively with Claude before any code was written
+- **Code generation** — all component files, the hotel data utilities, hooks, and test suite were generated by Claude based on the agreed architecture
+- **Debugging** — Claude diagnosed and fixed several build-time issues: a circular font reference in shadcn's generated `globals.css`, a Tailwind v4 class migration (`bg-gradient-to-br` → `bg-linear-to-br`), a lucide icon name mismatch (`Hotel2` → `Building2`), and a `@base-ui/react` API difference where `asChild` on `PopoverTrigger` is not supported
+- **Design iteration** — UI/UX decisions (color palette, filter bar layout, card gradient variety, logo treatment) were reviewed and refined through conversation, with Claude providing honest designer-perspective feedback on what was and wasn't working visually
+- **Test authoring** — the vitest test suite was written by Claude, including a key fix for timezone-safe date construction (`new Date(y, m-1, d)` vs `new Date("yyyy-MM-dd")`)
+
+The workflow was closer to pair programming than code generation — decisions were made collaboratively with Claude flagging tradeoffs, pushing back on weaker approaches, and explaining the reasoning behind each choice.

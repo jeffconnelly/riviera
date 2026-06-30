@@ -1,21 +1,8 @@
 import Link from "next/link";
 import { Star, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getMinPrice, formatReviewCount } from "@/lib/hotel-utils";
+import { getMinPrice, formatReviewCount, CITY_GRADIENTS } from "@/lib/hotel-utils";
 import type { Hotel } from "@/lib/types";
-
-const CITY_GRADIENTS: Record<string, string> = {
-  Chicago: "from-teal-700 to-emerald-600",
-  Austin: "from-teal-800 to-teal-600",
-  Miami: "from-emerald-500 to-teal-600",
-  "New York": "from-slate-700 to-teal-700",
-  Seattle: "from-teal-600 to-cyan-600",
-  London: "from-emerald-700 to-teal-800",
-  Paris: "from-teal-600 to-emerald-700",
-  Tokyo: "from-cyan-700 to-teal-600",
-  Sydney: "from-emerald-500 to-cyan-600",
-  Rome: "from-teal-800 to-emerald-500",
-};
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -46,11 +33,13 @@ export function HotelCard({ hotel }: HotelCardProps) {
 
   return (
     <Link href={`/hotels/${hotel.id}`} className="group block">
-      <article className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
+      <article className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 group-hover:-translate-y-1.5 group-hover:border-slate-200 group-hover:shadow-xl">
         {/* Gradient header band */}
-        <div className={cn("h-36 bg-gradient-to-br", gradient)}>
-          <div className="flex h-full items-end p-4">
-            <span className="rounded-full bg-white/20 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
+        <div className={cn("relative h-36 bg-linear-to-br", gradient)}>
+          {/* Radial highlight — ambient light from top-right for depth */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.18),transparent_65%)]" />
+          <div className="relative p-4">
+            <span className="rounded-full bg-black/20 px-2.5 py-1 text-xs font-medium tracking-wide text-white/90 backdrop-blur-sm">
               {hotel.address.city}
             </span>
           </div>
@@ -83,7 +72,7 @@ export function HotelCard({ hotel }: HotelCardProps) {
 
           <div className="mt-4 flex items-baseline gap-1">
             <span className="text-xs text-slate-400">from</span>
-            <span className="text-xl font-bold text-slate-900">
+            <span className="text-xl font-bold text-teal-700">
               ${minPrice}
             </span>
             <span className="text-xs text-slate-400">/night</span>

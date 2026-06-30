@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { format, differenceInCalendarDays } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { CalendarIcon, X } from "lucide-react";
@@ -20,10 +21,24 @@ interface RoomAvailabilityCheckerProps {
   hotel: Hotel;
 }
 
-export function RoomAvailabilityChecker({
-  hotel,
-}: RoomAvailabilityCheckerProps) {
-  const [range, setRange] = useState<DateRange | undefined>();
+// Parse "yyyy-MM-dd" as a local-timezone date to avoid UTC offset shifting
+function parseDateParam(s: string | null): Date | undefined {
+  if (!s) return undefined;
+  const [y, m, d] = s.split("-").map(Number);
+  if (!y || !m || !d) return undefined;
+  return new Date(y, m - 1, d);
+}
+
+export function RoomAvailabilityChecker({ hotel }: RoomAvailabilityCheckerProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [range, setRange] = useState<DateRange | undefined>(() => {
+    const from = parseDateParam(searchParams.get("checkIn"));
+    const to = parseDateParam(searchParams.get("checkOut"));
+    return from && to ? { from, to } : undefined;
+  });
   const [open, setOpen] = useState(false);
 
   const today = new Date();
@@ -33,24 +48,40 @@ export function RoomAvailabilityChecker({
   const checkOut = range?.to;
 
   const nights =
-    checkIn && checkOut
-      ? differenceInCalendarDays(checkOut, checkIn)
-      : undefined;
+    checkIn && checkOut ? differenceInCalendarDays(checkOut, checkIn) : undefined;
 
   const availableRooms =
-    checkIn && checkOut
-      ? getAvailableRooms(hotel, checkIn, checkOut)
-      : hotel.rooms;
+    checkIn && checkOut ? getAvailableRooms(hotel, checkIn, checkOut) : hotel.rooms;
 
-  const isFiltered = Boolean(checkIn && checkOut);
+  const isFiltered = Boolean(checkIn && checkOut && nights && nights > 0);
+
+  function syncUrl(r: DateRange | undefined) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (r?.from && r?.to) {
+      params.set("checkIn", format(r.from, "yyyy-MM-dd"));
+      params.set("checkOut", format(r.to, "yyyy-MM-dd"));
+    } else {
+      params.delete("checkIn");
+      params.delete("checkOut");
+    }
+    const qs = params.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+  }
+
+  function handleSelect(r: DateRange | undefined) {
+    setRange(r);
+    if (r?.from && r?.to && differenceInCalendarDays(r.to, r.from) > 0) {
+      syncUrl(r);
+      setOpen(false);
+    }
+  }
 
   function clearDates() {
     setRange(undefined);
+    syncUrl(undefined);
   }
 
-  const hasNoAvailability = hotel.rooms.every(
-    (r) => r.available_dates.length === 0
-  );
+  const hasNoAvailability = hotel.rooms.every((r) => r.available_dates.length === 0);
 
   return (
     <div>
@@ -70,10 +101,7 @@ export function RoomAvailabilityChecker({
             <Calendar
               mode="range"
               selected={range}
-              onSelect={(r) => {
-                setRange(r);
-                if (r?.from && r?.to) setOpen(false);
-              }}
+              onSelect={handleSelect}
               disabled={{ before: today }}
               numberOfMonths={2}
             />
@@ -92,7 +120,7 @@ export function RoomAvailabilityChecker({
           </Button>
         )}
 
-        {nights && nights > 0 && (
+        {nights !== undefined && nights > 0 && (
           <span className="text-sm text-slate-500">
             {nights} night{nights !== 1 ? "s" : ""}
           </span>
@@ -101,7 +129,6 @@ export function RoomAvailabilityChecker({
 
       <Separator className="mb-6" />
 
-      {/* Contact hotel if all rooms have no available_dates */}
       {hasNoAvailability ? (
         <div className="rounded-xl border border-amber-100 bg-amber-50 p-6 text-center">
           <p className="text-sm font-medium text-amber-800">
@@ -120,8 +147,7 @@ export function RoomAvailabilityChecker({
       ) : isFiltered && availableRooms.length === 0 ? (
         <div className="rounded-xl border border-slate-100 bg-slate-50 p-6 text-center">
           <p className="text-sm font-medium text-slate-700">
-            No rooms available for{" "}
-            {checkIn && format(checkIn, "MMM d")} –{" "}
+            No rooms available for {checkIn && format(checkIn, "MMM d")} –{" "}
             {checkOut && format(checkOut, "MMM d, yyyy")}
           </p>
           <p className="mt-1 text-xs text-slate-500">
@@ -139,8 +165,10 @@ export function RoomAvailabilityChecker({
         <div className="space-y-4">
           {!isFiltered && (
             <p className="text-sm text-slate-500">
-              Select dates above to check availability. Showing all{" "}
-              {hotel.rooms.length} room{hotel.rooms.length !== 1 ? "s" : ""}.
+              Select dates above to check availability.{" "}
+              {hotel.rooms.length === 1
+                ? "1 room at this property."
+                : `${hotel.rooms.length} rooms at this property.`}
             </p>
           )}
           {availableRooms.map((room) => (
