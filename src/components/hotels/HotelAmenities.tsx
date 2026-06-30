@@ -60,11 +60,8 @@ const AMENITY_MAP: Record<string, { label: string; icon: LucideIcon }> = {
   courtyard_lounge: { label: "Courtyard Lounge", icon: Users },
 };
 
-function formatAmenity(key: string): string {
-  return key
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
+const formatAmenity = (key: string): string =>
+  key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
 interface HotelAmenitiesProps {
   amenities: string[];
@@ -72,11 +69,11 @@ interface HotelAmenitiesProps {
   maxVisible?: number;
 }
 
-export function HotelAmenities({
+export const HotelAmenities = ({
   amenities,
   className,
   maxVisible,
-}: HotelAmenitiesProps) {
+}: HotelAmenitiesProps) => {
   const visible = maxVisible ? amenities.slice(0, maxVisible) : amenities;
   const remaining = maxVisible ? amenities.length - maxVisible : 0;
 
@@ -107,4 +104,4 @@ export function HotelAmenities({
       )}
     </div>
   );
-}
+};

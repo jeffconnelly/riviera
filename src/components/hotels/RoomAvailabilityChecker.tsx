@@ -22,14 +22,14 @@ interface RoomAvailabilityCheckerProps {
 }
 
 // Parse "yyyy-MM-dd" as a local-timezone date to avoid UTC offset shifting
-function parseDateParam(s: string | null): Date | undefined {
+const parseDateParam = (s: string | null): Date | undefined => {
   if (!s) return undefined;
   const [y, m, d] = s.split("-").map(Number);
   if (!y || !m || !d) return undefined;
   return new Date(y, m - 1, d);
-}
+};
 
-export function RoomAvailabilityChecker({ hotel }: RoomAvailabilityCheckerProps) {
+export const RoomAvailabilityChecker = ({ hotel }: RoomAvailabilityCheckerProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -55,7 +55,7 @@ export function RoomAvailabilityChecker({ hotel }: RoomAvailabilityCheckerProps)
 
   const isFiltered = Boolean(checkIn && checkOut && nights && nights > 0);
 
-  function syncUrl(r: DateRange | undefined) {
+  const syncUrl = (r: DateRange | undefined) => {
     const params = new URLSearchParams(searchParams.toString());
     if (r?.from && r?.to) {
       params.set("checkIn", format(r.from, "yyyy-MM-dd"));
@@ -66,20 +66,20 @@ export function RoomAvailabilityChecker({ hotel }: RoomAvailabilityCheckerProps)
     }
     const qs = params.toString();
     router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
-  }
+  };
 
-  function handleSelect(r: DateRange | undefined) {
+  const handleSelect = (r: DateRange | undefined) => {
     setRange(r);
     if (r?.from && r?.to && differenceInCalendarDays(r.to, r.from) > 0) {
       syncUrl(r);
       setOpen(false);
     }
-  }
+  };
 
-  function clearDates() {
+  const clearDates = () => {
     setRange(undefined);
     syncUrl(undefined);
-  }
+  };
 
   const hasNoAvailability = hotel.rooms.every((r) => r.available_dates.length === 0);
 
@@ -183,4 +183,4 @@ export function RoomAvailabilityChecker({ hotel }: RoomAvailabilityCheckerProps)
       )}
     </div>
   );
-}
+};

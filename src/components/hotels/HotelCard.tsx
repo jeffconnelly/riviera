@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { getMinPrice, formatReviewCount, CITY_GRADIENTS } from "@/lib/hotel-utils";
 import type { Hotel } from "@/lib/types";
 
-function StarRating({ rating }: { rating: number }) {
+const StarRating = ({ rating }: { rating: number }) => {
   return (
     <div className="flex items-center gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
@@ -20,13 +20,13 @@ function StarRating({ rating }: { rating: number }) {
       ))}
     </div>
   );
-}
+};
 
 interface HotelCardProps {
   hotel: Hotel;
 }
 
-export function HotelCard({ hotel }: HotelCardProps) {
+export const HotelCard = ({ hotel }: HotelCardProps) => {
   const gradient =
     CITY_GRADIENTS[hotel.address.city] ?? "from-teal-700 to-emerald-600";
   const minPrice = getMinPrice(hotel);
@@ -34,7 +34,6 @@ export function HotelCard({ hotel }: HotelCardProps) {
   return (
     <Link href={`/hotels/${hotel.id}`} className="group block">
       <article className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 group-hover:-translate-y-1.5 group-hover:border-slate-200 group-hover:shadow-xl">
-        {/* Gradient header band */}
         <div className={cn("relative h-36 bg-linear-to-br", gradient)}>
           {/* Radial highlight — ambient light from top-right for depth */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.18),transparent_65%)]" />
@@ -45,7 +44,6 @@ export function HotelCard({ hotel }: HotelCardProps) {
           </div>
         </div>
 
-        {/* Card body */}
         <div className="p-5">
           <div className="mb-1 flex items-start justify-between gap-2">
             <h3 className="line-clamp-2 text-base font-semibold leading-tight text-slate-900">
@@ -81,4 +79,4 @@ export function HotelCard({ hotel }: HotelCardProps) {
       </article>
     </Link>
   );
-}
+};

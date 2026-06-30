@@ -9,7 +9,7 @@ import type { Hotel } from "@/lib/types";
 const hotels = hotelsData as Hotel[];
 const cities = getCities(hotels);
 
-export default function Home() {
+const Home = () => {
   return (
     <>
       <Navbar />
@@ -23,4 +23,6 @@ export default function Home() {
       </Suspense>
     </>
   );
-}
+};
+
+export default Home;

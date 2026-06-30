@@ -3,11 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import type { Room } from "@/lib/types";
 
-function formatRoomAmenity(key: string): string {
-  return key
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
+const formatRoomAmenity = (key: string): string =>
+  key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
 interface RoomCardProps {
   room: Room;
@@ -15,7 +12,7 @@ interface RoomCardProps {
   nights?: number;
 }
 
-export function RoomCard({ room, isAvailable = true, nights }: RoomCardProps) {
+export const RoomCard = ({ room, isAvailable = true, nights }: RoomCardProps) => {
   const totalPrice = nights ? room.price_per_night * nights : undefined;
 
   return (
@@ -77,4 +74,4 @@ export function RoomCard({ room, isAvailable = true, nights }: RoomCardProps) {
       )}
     </div>
   );
-}
+};

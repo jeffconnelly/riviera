@@ -21,15 +21,15 @@ import { cn } from "@/lib/utils";
 
 const hotels = hotelsData as Hotel[];
 
-export async function generateStaticParams() {
+export const generateStaticParams = async () => {
   return hotels.map((h) => ({ id: h.id }));
-}
+};
 
-export default async function HotelPage({
+const HotelPage = async ({
   params,
 }: {
   params: Promise<{ id: string }>;
-}) {
+}) => {
   const { id } = await params;
   const hotel = hotels.find((h) => h.id === id);
   if (!hotel) notFound();
@@ -61,9 +61,7 @@ export default async function HotelPage({
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
-          {/* Left column — hotel info */}
           <div className="lg:col-span-2">
-            {/* Rating + stars */}
             <div className="mb-6 flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-1">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -89,12 +87,10 @@ export default async function HotelPage({
               </div>
             </div>
 
-            {/* Description */}
             <p className="text-slate-600 leading-relaxed">{hotel.description}</p>
 
             <Separator className="my-8" />
 
-            {/* Amenities */}
             <section>
               <h2 className="mb-4 text-lg font-semibold text-slate-900">
                 Amenities
@@ -104,7 +100,6 @@ export default async function HotelPage({
 
             <Separator className="my-8" />
 
-            {/* Room availability */}
             <section>
               <h2 className="mb-6 text-lg font-semibold text-slate-900">
                 Check Availability
@@ -115,9 +110,7 @@ export default async function HotelPage({
             </section>
           </div>
 
-          {/* Right column — property details */}
           <div className="space-y-6">
-            {/* Address */}
             <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
               <h3 className="mb-4 font-semibold text-slate-900">
                 Property Details
@@ -152,7 +145,6 @@ export default async function HotelPage({
               </div>
             </div>
 
-            {/* Policies */}
             <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
               <h3 className="mb-4 font-semibold text-slate-900">Policies</h3>
               <div className="space-y-3 text-sm text-slate-600">
@@ -184,4 +176,6 @@ export default async function HotelPage({
       </main>
     </>
   );
-}
+};
+
+export default HotelPage;

@@ -17,30 +17,29 @@ interface HotelFiltersProps {
   cities: string[];
 }
 
-export function HotelFilters({ cities }: HotelFiltersProps) {
+export const HotelFilters = ({ cities }: HotelFiltersProps) => {
   const { city, stars, maxPrice, setFilters, resetFilters, hasActiveFilters } =
     useFilters();
 
   // Local slider value for instant visual feedback — URL only updates on release
   const [sliderValue, setSliderValue] = useState(maxPrice);
 
-  function handleReset() {
+  const handleReset = () => {
     setSliderValue(MAX_PRICE);
     resetFilters();
-  }
+  };
 
-  function toggleStar(star: number) {
+  const toggleStar = (star: number) => {
     const next = stars.includes(star)
       ? stars.filter((s) => s !== star)
       : [...stars, star].sort();
     setFilters({ stars: next });
-  }
+  };
 
   return (
     <div className="sticky top-14.5 z-40 border-b border-slate-100 bg-white/95 backdrop-blur-sm">
       <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          {/* City filter */}
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
               City
@@ -67,7 +66,6 @@ export function HotelFilters({ cities }: HotelFiltersProps) {
 
           <div className="hidden h-8 w-px self-end bg-slate-100 sm:block" />
 
-          {/* Star rating toggles */}
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
               Stars
@@ -95,7 +93,6 @@ export function HotelFilters({ cities }: HotelFiltersProps) {
 
           <div className="hidden h-8 w-px self-end bg-slate-100 sm:block" />
 
-          {/* Price slider */}
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
               Max price
@@ -117,7 +114,6 @@ export function HotelFilters({ cities }: HotelFiltersProps) {
             </div>
           </div>
 
-          {/* Reset */}
           {hasActiveFilters && (
             <>
               <div className="hidden h-8 w-px self-end bg-slate-100 sm:block" />
@@ -139,4 +135,4 @@ export function HotelFilters({ cities }: HotelFiltersProps) {
       </div>
     </div>
   );
-}
+};

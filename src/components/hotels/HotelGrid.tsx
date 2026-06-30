@@ -25,7 +25,7 @@ interface HotelGridProps {
   onReset?: () => void;
 }
 
-export function HotelGrid({ hotels, onReset }: HotelGridProps) {
+export const HotelGrid = ({ hotels, onReset }: HotelGridProps) => {
   if (hotels.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -63,4 +63,4 @@ export function HotelGrid({ hotels, onReset }: HotelGridProps) {
       </motion.div>
     </div>
   );
-}
+};

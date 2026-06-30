@@ -10,11 +10,11 @@ export interface Filters {
   maxPrice: number;
 }
 
-export function useFilters(): Filters & {
+export const useFilters = (): Filters & {
   setFilters: (updates: Partial<Filters>) => void;
   resetFilters: () => void;
   hasActiveFilters: boolean;
-} {
+} => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -57,4 +57,4 @@ export function useFilters(): Filters & {
   }, [router, pathname]);
 
   return { city, stars, maxPrice, setFilters, resetFilters, hasActiveFilters };
-}
+};

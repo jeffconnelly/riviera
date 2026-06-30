@@ -9,7 +9,7 @@ interface HotelDashboardProps {
   hotels: Hotel[];
 }
 
-export function HotelDashboard({ hotels }: HotelDashboardProps) {
+export const HotelDashboard = ({ hotels }: HotelDashboardProps) => {
   const { city, stars, maxPrice, hasActiveFilters, resetFilters } = useFilters();
   const filtered = filterHotels(hotels, { city, stars, maxPrice });
 
@@ -36,4 +36,4 @@ export function HotelDashboard({ hotels }: HotelDashboardProps) {
       <HotelGrid hotels={filtered} total={hotels.length} onReset={resetFilters} />
     </div>
   );
-}
+};
