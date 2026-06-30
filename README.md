@@ -25,15 +25,7 @@ npm test          # vitest unit tests
 
 ## State Management
 
-All filter state (city, star rating, max price) lives in **URL search parameters** via Next.js `useSearchParams` and `useRouter`. No external state library is used.
-
-This approach was chosen deliberately:
-- Filter state is **shareable** — copy the URL, share the filtered view
-- **Browser back/forward** works correctly out of the box
-- **No hydration mismatch** — server and client render from the same source of truth
-- Zero boilerplate compared to Redux or Zustand for a use case this size
-
-Date range state (check-in / check-out) on the hotel detail page is also persisted in the URL (`?checkIn=yyyy-MM-dd&checkOut=yyyy-MM-dd`), so dates survive page refresh and can be bookmarked or shared.
+Filter state (city, stars, max price) lives in URL search parameters — no external state library. URLs are shareable, browser back/forward works out of the box, and there's no hydration mismatch between server and client. Date range on the hotel detail page is also URL-persisted so dates survive refresh.
 
 ## Component Breakdown
 
@@ -78,4 +70,4 @@ npm test
 
 ## AI Tooling
 
-Built with **Claude** (claude-sonnet-4-6 via Claude Code) as a pair programming partner — architecture, code generation, debugging, design iteration, and test authoring were all collaborative. Claude flagged tradeoffs, pushed back on weaker approaches, and explained reasoning throughout. Less "generate code" and more "work through decisions together."
+Built with **Claude Code** (claude-sonnet-4-6) as a pair programming partner — architecture, code generation, debugging, design iteration, and test authoring were all collaborative. Claude flagged tradeoffs, pushed back on weaker approaches, and explained reasoning throughout.
